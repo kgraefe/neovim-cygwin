@@ -1,0 +1,90 @@
+name: CI
+on: [push, pull_request]
+
+jobs:
+  build-test:
+    runs-on: windows-latest
+    permissions:
+      contents: write
+    defaults:
+      run:
+        shell: bash --noprofile --norc -e -o pipefail -o igncr {0}
+    env:
+      PATH: C:\cygwin\bin
+    steps:
+      - name: Install Cygwin Git and cygport
+        uses: cygwin/cygwin-install-action@v2
+        with:
+          packages: git cygport
+        timeout-minutes: 10
+      - name: Manually configure safe.directory
+        run: git config --global --add safe.directory '*'
+        timeout-minutes: 1
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          set-safe-directory: false  # actions/checkout otherwise tries to use the wrong config file, per actions/checkout#767
+          fetch-depth: 0  # Need this to push to Cygwin Git mirror
+        timeout-minutes: 1
+      - name: Generate cygcheck output
+        if: always()
+        run: cygcheck -srv >/var/log/cygcheck.out
+        timeout-minutes: 5
+      - name: Store Cygwin logs
+        if: always()
+        uses: actions/upload-artifact@v3
+        with:
+          name: cygwin-logs
+          path: 'C:\cygwin\var\log\'
+        timeout-minutes: 5
+      - name: Load variables from the cygport file
+        run: |
+          eval "$(cygport neovim.cygport vars BUILD_REQUIRES PVR)"
+          printf 'BUILD_REQUIRES=%s\n' "$BUILD_REQUIRES" >>"$GITHUB_ENV"
+          printf 'PVR=%s\n' "$PVR" >>"$GITHUB_ENV"
+      - name: Install Cygwin build requirements
+        uses: cygwin/cygwin-install-action@v2
+        with:
+          packages: ${{ env.BUILD_REQUIRES }}
+        timeout-minutes: 30
+      - name: Cygport download
+        run: cygport neovim.cygport download
+        timeout-minutes: 5
+      - name: Cygport prep
+        run: cygport neovim.cygport prep
+        timeout-minutes: 1
+      - name: Cygport compile
+        run: cygport neovim.cygport compile
+        timeout-minutes: 30
+      - name: Cygport test
+        run: cygport neovim.cygport test
+        timeout-minutes: 300
+      - name: Cygport install
+        run: cygport neovim.cygport install
+        timeout-minutes: 30
+      - name: Cygport package
+        run: cygport neovim.cygport package
+        timeout-minutes: 5
+      - name: Tar up build results
+        if: always()
+        run: tar -caf neovim-build-results.txz neovim-*-*.*/
+        timeout-minutes: 10
+      - name: Store build results
+        if: always()
+        uses: actions/upload-artifact@v2
+        with:
+          name: build-results
+          path: neovim-build-results.txz
+          if-no-files-found: error
+        timeout-minutes: 5
+      - name: Release
+        if: github.ref_type == 'tag'
+        uses: softprops/action-gh-release@v1
+        with:
+          fail_on_unmatched_files: true
+          files: |
+            neovim-${{ env.PVR }}.x86_64/dist/neovim/neovim-${{ env.PVR }}.tar.xz
+            neovim-${{ env.PVR }}.x86_64/dist/neovim/neovim-${{ env.PVR }}-src.tar.xz
+            neovim-${{ env.PVR }}.x86_64/dist/neovim/neovim-debuginfo/neovim-debuginfo-${{ env.PVR }}.tar.xz
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
