@@ -95,6 +95,12 @@ jobs:
           p=luajit-lpeg
           wget "https://github.com/kgraefe/luajit-lpeg-cygwin/releases/download/v$v/$p-$v.tar.xz"
           tar -C / -xJvf $p-$v.tar.xz
+      - name: Install luajit-mpack
+        run: |
+          v=1.0.10-1
+          p=luajit-mpack
+          wget "https://github.com/kgraefe/luajit-mpack-cygwin/releases/download/v$v/$p-$v.tar.xz"
+          tar -C / -xJvf $p-$v.tar.xz
       - name: Cygport download
         run: cygport neovim.cygport download
         timeout-minutes: 5
