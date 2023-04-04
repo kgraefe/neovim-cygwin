@@ -75,6 +75,13 @@ jobs:
             wget "https://github.com/kgraefe/unibilium-cygwin/releases/download/v$v/$p-$v.tar.xz"; \
             tar -C / -xJvf $p-$v.tar.xz; \
           done
+      - name: Install libtermkey{1,-devel}
+        run: |
+          v=0.22-1
+          for p in libtermkey{1,-devel}; do \
+            wget "https://github.com/kgraefe/libtermkey-cygwin/releases/download/v$v/$p-$v.tar.xz"; \
+            tar -C / -xJvf $p-$v.tar.xz; \
+          done
       - name: Cygport download
         run: cygport neovim.cygport download
         timeout-minutes: 5
