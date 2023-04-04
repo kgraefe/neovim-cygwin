@@ -47,6 +47,13 @@ jobs:
         with:
           packages: ${{ env.BUILD_REQUIRES }}
         timeout-minutes: 30
+      - name: Install libmsgpackc{2,-devel}
+        run: |
+          v=3.3.0-1
+          for p in libmsgpackc{2,-devel}; do \
+            wget "https://github.com/kgraefe/msgpack-c-cygwin/releases/download/v$v/$p-$v.tar.xz"; \
+            tar -C / -xJvf $p-$v.tar.xz; \
+          done
       - name: Cygport download
         run: cygport neovim.cygport download
         timeout-minutes: 5
