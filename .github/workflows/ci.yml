@@ -28,9 +28,10 @@ jobs:
         timeout-minutes: 1
       - name: Load variables from the cygport file
         run: |
-          eval "$(cygport neovim.cygport vars BUILD_REQUIRES PVR)"
+          eval "$(cygport neovim.cygport vars BUILD_REQUIRES PVR ARCH)"
           printf 'BUILD_REQUIRES=%s\n' "$BUILD_REQUIRES" >>"$GITHUB_ENV"
-          printf 'PVR=%s\n' "$PVR" >>"$GITHUB_ENV"
+          printf 'DIST_DIR=%s\n' "neovim-$PVR.$ARCH/dist" >>"$GITHUB_ENV"
+          printf 'DIST_ARCHIVE=%s\n' "neovim-dist-$PVR.$ARCH.tar.xz" >>"$GITHUB_ENV"
       - name: Install build requirements
         uses: cygwin/cygwin-install-action@v4
         with:
@@ -58,16 +59,15 @@ jobs:
       - name: Cygport package
         run: cygport neovim.cygport package
         timeout-minutes: 5
-      - name: Tar up build results
-        if: always()
-        run: tar -caf neovim-build-results.txz neovim-*-*.*/
-        timeout-minutes: 10
+      - name: Tar up dist directory
+        run: |
+          cd "$DIST_DIR"
+          tar -cJvaf "$DIST_ARCHIVE" */
       - name: Store build results
-        if: always()
         uses: actions/upload-artifact@v2
         with:
-          name: build-results
-          path: neovim-build-results.txz
+          name: ${{ env.DIST_ARCHIVE }}
+          path: ${{ env.DIST_DIR }}/${{ env.DIST_ARCHIVE }}
           if-no-files-found: error
         timeout-minutes: 5
       - name: Release
@@ -75,9 +75,6 @@ jobs:
         uses: softprops/action-gh-release@v1
         with:
           fail_on_unmatched_files: true
-          files: |
-            neovim-${{ env.PVR }}.x86_64/dist/neovim/neovim-${{ env.PVR }}.tar.xz
-            neovim-${{ env.PVR }}.x86_64/dist/neovim/neovim-${{ env.PVR }}-src.tar.xz
-            neovim-${{ env.PVR }}.x86_64/dist/neovim/neovim-debuginfo/neovim-debuginfo-${{ env.PVR }}.tar.xz
+          files: ${{ env.DIST_DIR }}/${{ env.DIST_ARCHIVE }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
