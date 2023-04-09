@@ -7,3 +7,17 @@ libtree-sitter-devel
 libiconv-devel
 libintl-devel
 gettext-devel
+libmsgpackc2
+libmsgpackc-devel
+libluv1
+libluv-devel
+luajit
+luajit-lpeg
+luajit-mpack
+luajit-devel
+libunibilium4
+libunibilium-devel
+libtermkey1
+libtermkey-devel
+libvterm0
+libvterm-devel
