@@ -26,17 +26,6 @@ jobs:
           set-safe-directory: false  # actions/checkout otherwise tries to use the wrong config file, per actions/checkout#767
           fetch-depth: 0  # Need this to push to Cygwin Git mirror
         timeout-minutes: 1
-      - name: Generate cygcheck output
-        if: always()
-        run: cygcheck -srv >/var/log/cygcheck.out
-        timeout-minutes: 5
-      - name: Store Cygwin logs
-        if: always()
-        uses: actions/upload-artifact@v3
-        with:
-          name: cygwin-logs
-          path: 'C:\cygwin\var\log\'
-        timeout-minutes: 5
       - name: Load variables from the cygport file
         run: |
           eval "$(cygport neovim.cygport vars BUILD_REQUIRES PVR)"
