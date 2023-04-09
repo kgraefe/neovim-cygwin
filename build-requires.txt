@@ -5,5 +5,5 @@ libuv-devel
 libtree-sitter0
 libtree-sitter-devel
 libiconv-devel
-linitl-devel
+libintl-devel
 gettext-devel
