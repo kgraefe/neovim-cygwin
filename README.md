@@ -3,13 +3,21 @@
 This a recipe to build and package [neovim][1] for [Cygwin][2]. The recipe is
 based on the [recipe in cascent's old neovim port][3].
 
+## Installation
+
+If things go well I am willing to maintain neovim and its dependencies on the
+Cygwin repository. Until then I host the binary packages on a Cygwin package
+overlay server at [cygwin.paktolos.net][12] which can be used to install them
+with the Cygwin setup tool.
+
+## Building from source
+
 Dependencies:
 - pkg-config (from Cygwin)
 - cmake (from Cygwin)
 - ninja (from Cygwin)
 - libuv-devel (from Cygwin)
-- libtree-sitter0 (from Cygwin)
-- libtree-sitter-devel (from Cygwin)
+- libtree-sitter{0,-devel} (from Cygwin)
 - libiconv-devel (from Cygwin)
 - linitl-devel (from Cygwin)
 - gettext-devel (from Cygwin)
@@ -44,3 +52,4 @@ tar -C / -xjvf neovim-$PVR.x86_64/dist/neovim/neovim-$PVR.tar.xz
 [9]: https://github.com/kgraefe/unibilium-cygwin
 [10]: https://github.com/kgraefe/libtermkey-cygwin
 [11]: https://github.com/kgraefe/libvterm-cygwin
+[12]: https://cygwin.paktolos.net/
