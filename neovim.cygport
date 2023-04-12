@@ -1,8 +1,8 @@
 inherit cmake
 
 NAME="neovim"
-VERSION="0.8.3"
-RELEASE=2
+VERSION="0.9.1"
+RELEASE=1
 LICENSE="Apache-2.0 AND Vim"
 CATEGORY="Editors"
 SUMMARY="Vim-fork focused on extensibility and usability"
