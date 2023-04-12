@@ -2,8 +2,6 @@ pkg-config
 cmake
 ninja
 libuv-devel
-libtree-sitter0
-libtree-sitter-devel
 libiconv-devel
 libintl-devel
 gettext-devel

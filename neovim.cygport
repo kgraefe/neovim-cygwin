@@ -18,3 +18,15 @@ SRC_URI="https://github.com/neovim/${NAME}/archive/v${VERSION}.tar.gz#/${PN}-${P
 BUILD_REQUIRES="$(tr '\n' ' ' <build-requires.txt)"
 
 CYGCMAKE_ARGS="-DENABLE_JEMALLOC=off -DNVIM_LINK_LIBRARIES=-lssp"
+
+src_compile() {
+	cd ${B}
+	CYGCMAKE_SOURCE="${S}/build/cmake" \
+	cygcmake -S cmake.deps -B .deps -G Ninja -D USE_BUNDLED=OFF -D USE_BUNDLED_TS=ON
+	CYGCMAKE_SOURCE="${S}/build/cmake" \
+	cygcmake --build.deps
+
+	CYGCMAKE_SOURCE="${S}/build/cmake" \
+	cygcmake
+	cygmake
+}
