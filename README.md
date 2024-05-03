@@ -19,7 +19,7 @@ Dependencies:
 - libuv-devel (from Cygwin)
 - libtree-sitter{0,-devel} (from Cygwin)
 - libiconv-devel (from Cygwin)
-- linitl-devel (from Cygwin)
+- libintl-devel (from Cygwin)
 - gettext-devel (from Cygwin)
 - [libmsgpackc{2,-devel}][4]
 - [libluv{1,-devel}][5]
